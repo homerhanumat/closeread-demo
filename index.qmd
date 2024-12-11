@@ -34,10 +34,9 @@ knitr::opts_chunk$set(
 
 **Note**:  For your solution here to be completely correct, the `Marathon` table has to include the runners who did not run for any team.
 
-:::{.cr-section}
+Also, we will want to make use of the male team results, which were computed in a previous problem:
 
 
-:::{#cr-maleteams}
 ```{r}
 #| echo: true
 MaleTeamResults <-
@@ -50,27 +49,9 @@ MaleTeamResults <-
   arrange(score)
 knitr::kable(MaleTeamResults)
 ```
-:::
 
-Also, we will want to make use of the male team results, which were computed in a previous problem. @cr-maleteams
+:::{.cr-section}
 
-:::{#cr-mycode1}
-```{r}
-#| echo: true
-#| eval: false
-Marathon %>%
-  filter(!is.na(team) & sex == "M") %>%
-  group_by(team_name) %>%
-  slice_min(order_by = seconds, n = 5) %>%
-  inner_join(MaleTeamResults) %>%
-  inner_join(Results %>%
-               mutate(overall = rank(seconds))) %>%
-  arrange(score, seconds) %>%
-  head(15) %>%
-  select(first_name, last_name, time, overall, team_name, score) %>% 
-  knitr::kable()
-```
-:::
 
 :::{#cr-mycode}
 ```{r}
@@ -90,7 +71,7 @@ Marathon %>%
 ```
 :::
 
-Here is the solution. @cr-mycode1 Let's go through it line-by-line.
+Here is the solution. [@cr-mycode]{.scale-to-fill} Let's go through it line-by-line.
 
 First, we filter to keep only the males who run for a team. [@cr-mycode]{hlz="2"}
 
@@ -108,10 +89,15 @@ We only want the runners from the top three teams.  since by now we have five ru
 
 Finally, we select the desired columns.[@cr-mycode]{hlz="10-11"}, and pass the resulting table to `knitr::kable()` for display.
 
+
+
+:::
+
 Here are the runners!@cr-mytable
 
-:::{#cr-mytable}
+
 ```{r}
+#| echo: false
 Marathon %>%
   filter(!is.na(team) & sex == "M") %>%
   group_by(team_name) %>%
@@ -124,7 +110,4 @@ Marathon %>%
   select(first_name, last_name, time, overall, team_name, score) %>% 
   knitr::kable()
 ```
-:::
-:::
-
 

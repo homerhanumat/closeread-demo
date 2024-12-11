@@ -1,0 +1,4 @@
+- source: index.qmd
+  quarto-pub:
+    - id: c09dda36-cf6c-4af2-82d5-fed3e5414d2b
+      url: https://homer.quarto.pub/problem-6-part-c
