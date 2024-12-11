@@ -1,0 +1,130 @@
+---
+title: "Problem 6 Part c"
+editor: source
+format:
+  closeread-html:
+    code-tools: true
+    cr-style:
+      narrative-background-color-overlay: transparent
+      narrative-background-color-sidebar: transparent
+      section-background-color: transparent
+      narrative-text-color-overlay: black
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+library(bigrace)
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  error = TRUE
+)
+```
+
+
+
+## The Problem
+
+>Special recognition will be given to the runners who scored in the top five for each of the three top male teams, so you'll need to display them in a table.
+
+>The runners should be arranged in order of how their team scored (first-place to third-place) and within each team should be ordered by how they placed in the *overall* race standings (not among all men who ran for a team).  Display the first and last name of each runner, his completion time, overall placement, team name and the score of his team.
+
+## The Solution
+
+**Note**:  For your solution here to be completely correct, the `Marathon` table has to include the runners who did not run for any team.
+
+:::{.cr-section}
+
+
+:::{#cr-maleteams}
+```{r}
+#| echo: true
+MaleTeamResults <-
+  Marathon %>%
+  filter(!is.na(team) & sex == "M") %>%
+  mutate(place = rank(seconds)) %>%
+  group_by(team_name) %>%
+  slice_min(order_by = place, n = 5) %>%
+  summarise(score = sum(place)) %>%
+  arrange(score)
+knitr::kable(MaleTeamResults)
+```
+:::
+
+Also, we will want to make use of the male team results, which were computed in a previous problem. @cr-maleteams
+
+:::{#cr-mycode1}
+```{r}
+#| echo: true
+#| eval: false
+Marathon %>%
+  filter(!is.na(team) & sex == "M") %>%
+  group_by(team_name) %>%
+  slice_min(order_by = seconds, n = 5) %>%
+  inner_join(MaleTeamResults) %>%
+  inner_join(Results %>%
+               mutate(overall = rank(seconds))) %>%
+  arrange(score, seconds) %>%
+  head(15) %>%
+  select(first_name, last_name, time, overall, team_name, score) %>% 
+  knitr::kable()
+```
+:::
+
+:::{#cr-mycode}
+```{r}
+#| echo: true
+#| eval: false
+Marathon %>%
+  filter(!is.na(team) & sex == "M") %>%
+  group_by(team_name) %>%
+  slice_min(order_by = seconds, n = 5) %>%
+  inner_join(MaleTeamResults) %>%
+  inner_join(Results %>%
+               mutate(overall = rank(seconds))) %>%
+  arrange(score, seconds) %>%
+  head(15) %>%
+  select(first_name, last_name, time, overall, team_name, score) %>% 
+  knitr::kable()
+```
+:::
+
+Here is the solution. @cr-mycode1 Let's go through it line-by-line.
+
+First, we filter to keep only the males who run for a team. [@cr-mycode]{hlz="2"}
+
+Then we group by the name of the team. [@cr-mycode]{hlz="3"}
+
+Within each team-group, we find the five fastest runners, and keep only them.  [@cr-mycode]{hlz="4"}
+
+Recall that "the runners should be arranged in order of how their team scored (first-place to third-place)".  Hence we need to know how each runner's team scored so, we can accomplish the arranging.  We can pick up the team-score from `MaleTeamResults`, by joining with it, on the commoon variable `team_name`.[@cr-mycode]{hlz="5"}
+
+We need each runner's rank among all runners in the race.  To get this, we compute the rank of each runner in the `Results` table and then join our table with this table.[@cr-mycode]{hlz="6-7"}
+
+At last, we can arrange the runners:  first in order of how their teams scored, and, within each team, how fast the runners were.[@cr-mycode]{hlz="8"}
+
+We only want the runners from the top three teams.  since by now we have five runners per team, we can just take the first 15 rows of our table.[@cr-mycode]{hlz="9"}
+
+Finally, we select the desired columns.[@cr-mycode]{hlz="10-11"}, and pass the resulting table to `knitr::kable()` for display.
+
+Here are the runners!@cr-mytable
+
+:::{#cr-mytable}
+```{r}
+Marathon %>%
+  filter(!is.na(team) & sex == "M") %>%
+  group_by(team_name) %>%
+  slice_min(order_by = seconds, n = 5) %>%
+  inner_join(MaleTeamResults) %>%
+  inner_join(Results %>%
+               mutate(overall = rank(seconds))) %>%
+  arrange(score, seconds) %>%
+  head(15) %>%
+  select(first_name, last_name, time, overall, team_name, score) %>% 
+  knitr::kable()
+```
+:::
+:::
+
+
