@@ -2,3 +2,7 @@
   quarto-pub:
     - id: c09dda36-cf6c-4af2-82d5-fed3e5414d2b
       url: https://homer.quarto.pub/problem-6-part-c
+- source: ggplot.qmd
+  quarto-pub:
+    - id: f43b94f8-9d46-411c-9d0c-4ef87b20fe64
+      url: https://homer.quarto.pub/building-a-graph-in-ggplot2
